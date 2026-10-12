@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 
@@ -103,17 +104,67 @@ namespace Assignment
 
         public int[] AS01_FindFirstAndLastElementOfArray(int[] array, int target)
         {
-            throw new NotImplementedException();
+            int first = -1;
+            int last = -1;
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == target)
+                {
+                    if (first == -1)
+                    {
+                        first = i; // บันทึกตำแหน่งแรกที่เจอ
+                    }
+                    last = i; // อัปเดตตำแหน่งสุดท้ายไปเรื่อยๆ
+                }
+            }
+
+            // หากไม่พบค่าเลย ให้คืนค่าอาร์เรย์ที่มีเพียง -1 ตามที่ Test Case ระบุ
+            if (first == -1)
+            {
+                return new int[] { -1 };
+            }
+
+            return new int[] { first, last };
         }
 
         public int AS02_FindMaxLessThan(int[] array, int target)
         {
-            throw new NotImplementedException();
+            int maxLess = -1;
+            bool found = false;
+
+            // วนลูปหาค่าที่น้อยกว่า target แต่มีค่ามากที่สุด
+            // (ครอบคลุมกรณีที่อาร์เรย์อาจไม่ได้เรียงลำดับมาตาม Test Case)
+            foreach (int num in array)
+            {
+                if (num < target)
+                {
+                    if (!found || num > maxLess)
+                    {
+                        maxLess = num;
+                        found = true;
+                    }
+                }
+            }
+
+            return maxLess;
         }
 
         public int[] AS03_FindRange(int[] array, int min, int max)
         {
-            throw new NotImplementedException();
+            List<int> result = new List<int>();
+
+            foreach (int num in array)
+            {
+                // ตรวจสอบว่าค่าอยู่ในช่วง [min, max] รวม min และ max ด้วย
+                if (num >= min && num <= max)
+                {
+                    result.Add(num);
+                }
+            }
+
+            // ถ้าไม่พบค่าเลย คืนค่าเป็นอาร์เรย์ว่าง (Empty Array) ตาม Test Case[cite: 1]
+            return result.ToArray();
         }
 
         #endregion
@@ -122,7 +173,29 @@ namespace Assignment
 
         public int[] EX01_FindTargetEnemies(int[] enemyHPs, int mana)
         {
-            throw new NotImplementedException();
+            // สร้างอาร์เรย์ใหม่เพื่อไม่ให้กระทบค่าเดิม แล้วทำการเรียงลำดับจากน้อยไปมาก
+            int[] sortedHPs = (int[])enemyHPs.Clone();
+            Array.Sort(sortedHPs);
+
+            List<int> targets = new List<int>();
+            int currentMana = mana;
+
+            // เลือกโจมตีศัตรูที่มี HP น้อยที่สุดก่อน เพื่อให้กำจัดศัตรูได้จำนวนมากที่สุด
+            foreach (int hp in sortedHPs)
+            {
+                if (currentMana >= hp)
+                {
+                    targets.Add(hp);
+                    currentMana -= hp; // หักมานาที่ใช้ไป
+                }
+                else
+                {
+                    // ถ้ามานาไม่พอแล้วให้หยุดการตรวจสอบ
+                    break;
+                }
+            }
+
+            return targets.ToArray();
         }
 
         #endregion
